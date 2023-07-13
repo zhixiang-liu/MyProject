@@ -1,0 +1,58 @@
+import React, { useEffect, useState } from 'react'
+import { CONTRACT_ABI, CONTRACT_ADDRESS } from '../contracts/config'
+import Web3 from 'web3'
+const web3 = new Web3('HTTP://127.0.0.1:7545')
+const contract = new web3.eth.Contract(CONTRACT_ABI, CONTRACT_ADDRESS) // 创建智能合约实例
+
+function LogInfo() {
+  const [metamaskAccount, setMetamaskAccount] = useState()
+
+
+  async function handleClick() {
+    const a = 100
+    const b = 20
+    // 调用合约的 add 函数并获取返回值
+    const res = await contract.methods.add(a, b).call()
+    console.log(res.toString())
+    return res
+  }
+
+  handleClick().then((result) => {
+    console.log(result)
+  })
+  
+  const [metamaskAccount, setMetamaskAccount] = useState()
+  useEffect(() => {
+    async function loadMetamaskAccount() {
+      if (window.ethereum) {
+        try {
+          const web3 = new Web3(window.ethereum)
+          const accounts = await web3.eth.getAccounts()
+          setMetamaskAccount(accounts[0])
+
+          window.ethereum.on('accountsChanged', handleAccountsChanged)
+        } catch (error) {
+          console.error('Failed to load Metamask account', error)
+        }
+      } else {
+        console.error('Please install Metamask')
+      }
+    }
+    function handleAccountsChanged(accounts) {
+      setMetamaskAccount(accounts[0])
+    }
+    loadMetamaskAccount()
+    return () => {
+      window.ethereum.removeListener('accountsChanged', handleAccountsChanged)
+    }
+  }, [])
+
+  return (
+    <>
+      <button onClick={handleClick}>调用 add 函数</button>
+      <div>当前账户：{metamaskAccount}</div>
+    </>
+  )
+}
+
+export default LogInfo

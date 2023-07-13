@@ -1,0 +1,9 @@
+#react基本目录结构
++api用于存放ajax相关的
++assets公共资源
++components非路由组件
++config配置文件
++pages路由组件
++utils工具模块
++App.jsx应用根组件
++/index.js入口文件，相当于main
